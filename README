@@ -1,0 +1,14 @@
+This is a direct JavaScript port of the mnemonic encoder originally written
+in C by Oren Tirosh and available from:
+
+https://github.com/singpolyma/mnemonicode
+
+These routines implement a method for encoding binary data into a sequence
+of words which can be spoken over the phone, for example, and converted
+back to data on the other side.
+
+For more information, see:
+
+http://web.archive.org/web/20101031205747/http://www.tothink.com/mnemonic/
+
+Available under the MIT license.
