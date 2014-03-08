@@ -21,10 +21,10 @@
  THE SOFTWARE.
 */
 
-var MN_BASE = 1626;                    // cubic root of 2^32, rounded up
-var MN_REMAINDER = 7;                  // extra words for 24 bit remainders */
-var MN_WORDS = MN_BASE + MN_REMAINDER; // total number of words */
-var MN_WORD_BUFLEN = 25;               // size for a word buffer+headroom */
+var MN_BASE = 1626;                    /* cubic root of 2^32, rounded up */
+var MN_REMAINDER = 7;                  /* extra words for 24 bit remainders */
+var MN_WORDS = MN_BASE + MN_REMAINDER; /* total number of words */
+var MN_WORD_BUFLEN = 25;               /* size for a word buffer+headroom */
 
 /* Sample formats for mn_encode */
 var MN_FDEFAULT           = "x-x-x--"
@@ -436,7 +436,7 @@ function mn_encode (src, format)
 {
   var n;
   var dest = "";
-  var i = 0; // index within `format`
+  var i = 0; /* index within format */
   var word;
 
   if (!format || format == "")
