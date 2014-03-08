@@ -14,8 +14,9 @@ http://web.archive.org/web/20101031205747/http://www.tothink.com/mnemonic/
 Available under the MIT license.
 
 Current status:
-- mn_encode works and is compatible with mnemonic.c
+- mn_encode and mn_decode work and are compatible with mnemonic.c
 
 To do:
-- Implement mn_decode
+- Automated tests
 - Automatic conversion of byte arrays to/from strings or numbers
+- Package as a module for use in the browser and Node.js

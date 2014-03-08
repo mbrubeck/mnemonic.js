@@ -310,6 +310,19 @@ var mn_words = [
   "yes"
 ];
 
+var mn_word_index_map; /* object mapping words to array indices */
+
+function mn_word_index (word) {
+  if (!mn_word_index_map)
+    {
+      mn_word_index_map = {};
+      for (var i = 1; i < mn_words.length; i++)
+        mn_word_index_map[mn_words[i]] = i;
+    }
+
+  return mn_word_index_map[word.toLowerCase()];
+}
+
 /*
  * isalpha
  *
@@ -409,6 +422,127 @@ function mn_encode_word_index (src, n)
 }
 
 /*
+ * mn_split
+ *
+ * Description:
+ *  Split a string into an array of words.
+ *
+ * Parameters:
+ *  src      - String to split
+ *
+ * Return value:
+ *  Array of strings containing exactly one word each
+ */
+
+function mn_split (src)
+{
+  /* split on non-alphabetic characters and ignore empty strings */
+  return src.split(/[^a-zA-Z]+/).filter(function(x) { return x; });
+}
+
+/*
+ * mn_decode_word_index
+ *
+ * Description:
+ *  Perform one step of decoding a sequence of words into binary data.
+ *
+ * Parameters:
+ *  index    - Index of word, e.g. return value of mn_word_index. Use
+ *             the value MN_EOF(=0) to signal the end of input.
+ *  dest     - Array to receive decoded binary result.
+ *  offset   - Integer offset into the destination buffer for
+ *             next data byte. Initialize offset to 0 before first call to
+ *             function.
+ *
+ * Return value:
+ *  Amount of data actually decoded.
+ *
+ *  Throws an exception if the string cannot be decoded.
+ */
+
+function mn_decode_word_index (index, dest, offset)
+{
+  var x;                  /* Temporary for MN_BASE arithmetic */
+  var groupofs;
+  var i;
+
+  if (offset < 0)
+    throw "Negative offset in mn_decode_word_index";
+
+  if (index > MN_WORDS)
+    throw "Word index out of range";
+
+  if (index > MN_BASE && offset % 4 != 2)
+    throw "Unexpected 24 bit remainder word"
+
+  groupofs = offset & ~3;      /* Offset of 4 byte group containing offet */
+  x = 0;
+  for (i = 0; i < 4; i++)
+    {
+      x |= dest[groupofs + i] << (i * 8); /* assemble number */
+    }
+
+  if (index == 0)          /* Got EOF signal */
+    {
+      switch (offset % 4)
+        {
+        case 3:         /* group was three words and the last */
+          return offset;         /*  word was a 24 bit remainder */
+        case 2:         /* last group has two words */
+          if (x <= 0xFFFF)      /*  should encode 16 bit data */
+            return offset;
+          else
+            throw "Unexpected remainder (possible truncated string)";
+        case 1:         /* last group has just one word */
+          if (x <= 0xFF)        /*  should encode 8 bits */
+            return offset;
+          else
+            throw "Unexpected remainder (possible truncated string)";
+
+        case 0:         /* last group was full 3 words */
+          return offset;
+        }
+    }
+
+  index--;                      /* 1 based to 0 based index */
+
+  switch (offset % 4)
+    {
+    case 3:
+      throw "Got data past 24 bit remainder";
+    case 2:
+      if (index >= MN_BASE)
+        {                       /* 24 bit remainder */
+          x += (index - MN_BASE) * MN_BASE * MN_BASE;
+          offset++;          /* *offset%4 == 3 for next time */
+        }
+      else
+        {                       /* catch invalid encodings */
+          if (index >= 1625 || (index == 1624 && x > 1312671))
+            throw "Invalid encoding";
+          x += index * MN_BASE * MN_BASE;
+          offset += 2;       /* *offset%4 == 0 for next time */
+        }
+      break;
+    case 1:
+      x += index * MN_BASE;
+      offset++;
+      break;
+    case 0:
+      x = index;
+      offset++;
+      break;
+    }
+
+  for (i = 0; i < 4; i++)
+    {
+      dest[groupofs + i] = x % 256;
+      x = Math.floor(x / 256);
+    }
+  return offset;
+}
+
+/*
  * mn_encode
  *
  * Description:
@@ -464,5 +598,41 @@ function mn_encode (src, format)
         i++;
       dest += word;
     }
+  return dest;
+}
+
+/*
+ * mn_decode
+ *
+ * Description:
+ *  Decode a text representation to an array of bytes
+ *
+ * Parameters:
+ *  src      - String to decode
+ *
+ * Return value:
+ *  Array of bytes
+ *
+ *  Throws an exception if the string cannot be decoded.
+ */
+
+function mn_decode (src)
+{
+  var index;
+  var offset = 0;
+  var words = mn_split (src);
+
+  if (!words.length)
+    return [];
+
+  var dest = [];
+  for (var i = 0; i < words.length; i++)
+    {
+      index = mn_word_index(words[i]);
+      if (!index)
+        throw "Unrecognized word";
+      offset = mn_decode_word_index (index, dest, offset);
+    }
+  mn_decode_word_index (0, dest, offset);
   return dest;
 }
