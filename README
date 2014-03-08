@@ -11,6 +11,17 @@ For more information, see:
 
 http://web.archive.org/web/20101031205747/http://www.tothink.com/mnemonic/
 
+Example usage:
+
+    >>> mn_encode([12, 36, 128, 40])
+    "popcorn-adrian-exit"
+
+    >>> mn_encode([12, 36, 128, 40], "x.x-x ")
+    "popcorn.adrian-exit"
+
+    >>> mn_decode("popcorn adrian exit")
+    [12, 36, 128, 40]
+
 Available under the MIT license.
 
 Current status:
