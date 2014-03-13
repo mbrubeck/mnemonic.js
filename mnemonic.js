@@ -20,6 +20,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
 */
+(function(exports) {
 
 var MN_BASE = 1626;                    /* cubic root of 2^32, rounded up */
 var MN_REMAINDER = 7;                  /* extra words for 24 bit remainders */
@@ -636,3 +637,66 @@ function mn_decode (src)
   mn_decode_word_index (0, dest, offset);
   return dest;
 }
+
+/*
+ * int32_to_bytes
+ *
+ * Description:
+ *  Convert a number to a big-endian array of bytes.
+ *
+ * Parameters:
+ *  n - Number
+ *
+ * Return value:
+ *  Array of bytes
+ */
+function int32_to_bytes(n) {
+  var bytes = [];
+  for (var i = 3; i >= 0; i--) {
+    bytes[i] = n & 0xFF;
+    n >>= 8;
+  }
+  return bytes;
+}
+
+/*
+ * bytes_to_int32
+ *
+ * Description:
+ *  Convert a big-endian array of bytes to a number.
+ *
+ * Parameters:
+ *  bytes - Array of bytes
+ *
+ * Return value:
+ *  Number
+ */
+function bytes_to_int32(bytes) {
+  var n = 0;
+  for (var i = 0; i < 4; i++) {
+    n <<= 8;
+    n |= bytes[i];
+  }
+  return n;
+}
+
+/*
+ * Encode a 32-bit number.
+ */
+function encode_int32(n) {
+  return mn_encode(int32_to_bytes(n));
+}
+
+/*
+ * Decode a 32-bit number.
+ */
+function decode_int32(src) {
+  return bytes_to_int32(mn_decode(src));
+}
+
+exports.encode = mn_encode;
+exports.decode = mn_decode;
+exports.encode_int32 = encode_int32;
+exports.decode_int32 = decode_int32;
+
+})(typeof exports == "undefined" ? this["mnemonic"]={} : exports);

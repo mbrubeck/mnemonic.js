@@ -13,21 +13,19 @@ http://web.archive.org/web/20101031205747/http://www.tothink.com/mnemonic/
 
 Example usage:
 
-    >>> mn_encode([12, 36, 128, 40])
-    "popcorn-adrian-exit"
+    >>> mnemonic.encode([101, 2, 240, 6, 108, 11, 20, 97])
+    "digital-apollo-aroma--rival-artist-rebel"
 
-    >>> mn_encode([12, 36, 128, 40], "x.x-x ")
-    "popcorn.adrian-exit"
+    >>> mnemonic.encode([101, 2, 240, 6, 108, 11, 20, 97], "x/x/x - ")
+    "digital/apollo/aroma - rival/artist/rebel"
 
-    >>> mn_decode("popcorn adrian exit")
-    [12, 36, 128, 40]
+    >>> mnemonic.decode("digital.apollo.aroma.rival.artist.rebel")
+    [101, 2, 240, 6, 108, 11, 20, 97]
+
+    >>> mnemonic.encode_int32(438871)
+    "fabric-yoyo-perfume"
+
+    >>> mnemonic.decode_int32("fabric-yoyo-perfume")
+    438871
 
 Available under the MIT license.
-
-Current status:
-- mn_encode and mn_decode work and are compatible with mnemonic.c
-
-To do:
-- Automated tests
-- Automatic conversion of byte arrays to/from strings or numbers
-- Package as a module for use in the browser and Node.js
