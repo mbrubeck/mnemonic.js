@@ -650,11 +650,11 @@ function mn_decode (src)
     {
       index = mn_word_index(words[i]);
       if (!index)
-        throw "Unrecognized word";
+        break;
       offset = mn_decode_word_index (index, dest, offset);
     }
-  mn_decode_word_index (0, dest, offset);
-  return dest;
+  offset = mn_decode_word_index (0, dest, offset);
+  return dest.slice (0, offset);
 }
 
 /*
