@@ -691,6 +691,8 @@ function int32_to_bytes(n) {
  *  32-bit number
  */
 function bytes_to_int32(bytes) {
+  if (bytes.length > 4)
+    throw "Too many bytes";
   var n = 0;
   for (var i = 0; i < 4; i++) {
     n <<= 8;
