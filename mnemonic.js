@@ -332,9 +332,28 @@ function mn_word_index (word) {
  *
  * Parameters:
  *  c - String
+ *
+ * Return value:
+ *  Boolean
  */
 function isalpha (c) {
   return /^[a-zA-Z]$/.test(c);
+}
+
+/*
+ * uint32
+ *
+ * Description:
+ *  Coerce a signed 32-bit integer to an unsigned 32-bit integer.
+ *
+ * Parameters:
+ *  n - Number
+ *
+ * Return value:
+ *  32-bit unsigned number
+ */
+function uint32 (n) {
+  return (n < 0 ? 0x100000000 + n : n);
 }
 
 /*
@@ -407,7 +426,7 @@ function mn_encode_word_index (src, n)
   if (remaining >= 4)
     remaining = 4;
   for (i = 0; i < remaining; i++)
-    x |= src[offset + i] << (i * 8);      /* endianness-agnostic */
+    x = uint32 (x | (src[offset + i] << (i * 8)));      /* endianness-agnostic */
 
   switch (n % 3)
     {
@@ -480,7 +499,7 @@ function mn_decode_word_index (index, dest, offset)
   x = 0;
   for (i = 0; i < 4; i++)
     {
-      x |= dest[groupofs + i] << (i * 8); /* assemble number */
+      x = uint32 (x | (dest[groupofs + i] << (i * 8))); /* assemble number */
     }
 
   if (index == 0)          /* Got EOF signal */
@@ -645,7 +664,7 @@ function mn_decode (src)
  *  Convert a number to a big-endian array of bytes.
  *
  * Parameters:
- *  n - Number
+ *  n - Positive integer
  *
  * Return value:
  *  Array of bytes
@@ -666,10 +685,10 @@ function int32_to_bytes(n) {
  *  Convert a big-endian array of bytes to a number.
  *
  * Parameters:
- *  bytes - Array of bytes
+ *  bytes - Array of up to 4 bytes
  *
  * Return value:
- *  Number
+ *  32-bit number
  */
 function bytes_to_int32(bytes) {
   var n = 0;
