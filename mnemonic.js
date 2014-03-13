@@ -649,8 +649,10 @@ function mn_decode (src)
   for (var i = 0; i < words.length; i++)
     {
       index = mn_word_index(words[i]);
-      if (!index)
+      if (index == 0)
         break;
+      if (typeof index == "undefined")
+        throw "Unrecognized word";
       offset = mn_decode_word_index (index, dest, offset);
     }
   offset = mn_decode_word_index (0, dest, offset);
