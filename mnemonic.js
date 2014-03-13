@@ -671,8 +671,8 @@ function mn_decode (src)
  */
 function int32_to_bytes(n) {
   var bytes = [];
-  for (var i = 3; i >= 0; i--) {
-    bytes[i] = n & 0xFF;
+  for (var i = 3; i >= 0 && n; i--) {
+    bytes.unshift(n & 0xFF);
     n >>= 8;
   }
   return bytes;
@@ -694,7 +694,7 @@ function bytes_to_int32(bytes) {
   if (bytes.length > 4)
     throw "Too many bytes";
   var n = 0;
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < bytes.length; i++) {
     n <<= 8;
     n |= bytes[i];
   }

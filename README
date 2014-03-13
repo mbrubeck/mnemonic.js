@@ -23,9 +23,9 @@ Example usage:
     [101, 2, 240, 6, 108, 11, 20, 97]
 
     >>> mnemonic.encode_int32(438871)
-    "fabric-yoyo-perfume"
+    "judo-fluid-jet"
 
-    >>> mnemonic.decode_int32("fabric-yoyo-perfume")
+    >>> mnemonic.decode_int32("judo-fluid-jet")
     438871
 
 Available under the MIT license.
